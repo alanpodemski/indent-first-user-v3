@@ -314,17 +314,10 @@ export function ProductPreview({ activeProduct }: ProductPreviewProps) {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-border px-6 py-4">
-        <p className="text-xs text-muted-foreground">Live preview</p>
-        <h2 className="text-sm font-semibold text-foreground">
-          {activeProduct ? productLabels[activeProduct] : "Indent"}
-        </h2>
-      </div>
-      <div className="relative flex-1 overflow-hidden p-6">
+    <div className="relative h-full overflow-hidden p-4">
         {/* Default state */}
         <div
-          className="absolute inset-6"
+          className="absolute inset-4"
           style={{
             opacity: !activeProduct ? 1 : 0,
             transform: !activeProduct ? "scale(1)" : "scale(0.98)",
@@ -338,7 +331,7 @@ export function ProductPreview({ activeProduct }: ProductPreviewProps) {
         {Object.entries(panels).map(([id, panel]) => (
           <div
             key={id}
-            className="absolute inset-6"
+            className="absolute inset-4"
             style={{
               opacity: id === activeProduct ? 1 : 0,
               transform: id === activeProduct ? "scale(1)" : "scale(0.98)",
@@ -351,7 +344,6 @@ export function ProductPreview({ activeProduct }: ProductPreviewProps) {
             {panel}
           </div>
         ))}
-      </div>
     </div>
   )
 }

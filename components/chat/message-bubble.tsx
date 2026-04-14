@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { ProductCard } from "./product-card"
+import { IndentLogo } from "@/components/indent-logo"
 
 type ProductCardData = {
   name: string
@@ -44,41 +45,36 @@ export function MessageBubble({
 }: MessageBubbleProps) {
   const isUser = role === "user"
 
-  // Parse out product cards and quick replies from AI text
   const { cleanText: textWithoutCards, cards } = parseProductCards(content)
   const { cleanText } = parseQuickReplies(textWithoutCards)
 
+  if (isUser) {
+    return (
+      <div className="animate-message-in flex items-start gap-3">
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground/[0.06]">
+          <span className="text-[9px] font-bold text-foreground/40">You</span>
+        </div>
+        <p className="pt-0.5 text-[15px] leading-relaxed text-foreground/70">
+          {cleanText}
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={cn(
-        "animate-message-in flex w-full gap-3",
-        isUser ? "justify-end" : "justify-start",
-      )}
-    >
-      {!isUser && (
-        <div className="bg-primary text-primary-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
-          I
+    <div className="animate-message-in flex flex-col gap-3">
+      <div className="flex items-start gap-3">
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-500/20">
+          <IndentLogo className="size-3.5 text-blue-500" />
         </div>
-      )}
-      <div
-        className={cn(
-          "max-w-[80%] space-y-3",
-          isUser ? "items-end" : "items-start",
-        )}
-      >
-        <div
-          className={cn(
-            "rounded-2xl px-4 py-3 text-[15px] leading-relaxed",
-            isUser
-              ? "bg-primary text-primary-foreground rounded-br-md"
-              : "bg-muted text-foreground rounded-bl-md",
-          )}
-        >
-          <p className="whitespace-pre-wrap">{cleanText}</p>
+        <div className="flex flex-col gap-3 pt-0.5">
+          <p className="text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap">
+            {cleanText}
+          </p>
+          {cards.map((card, i) => (
+            <ProductCard key={i} {...card} />
+          ))}
         </div>
-        {cards.map((card, i) => (
-          <ProductCard key={i} {...card} />
-        ))}
       </div>
     </div>
   )

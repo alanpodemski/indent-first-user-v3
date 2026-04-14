@@ -40,14 +40,12 @@ function extractQuickReplies(text: string): string[] {
 }
 
 function detectActiveProduct(messages: UIMessage[]): string | null {
-  // Scan messages in reverse to find the most recently discussed product
   for (let i = messages.length - 1; i >= 0; i--) {
     const text = getMessageText(messages[i]).toLowerCase()
     if (text.includes("indent code") || text.includes("pair programmer") || text.includes("coding agent")) return "code"
     if (text.includes("indent data") || text.includes("data expert") || text.includes("data warehouse")) return "data"
     if (text.includes("indent review") || text.includes("code review") || text.includes("code standards")) return "review"
     if (text.includes("indent oncall") || text.includes("incident response") || text.includes("on-call") || text.includes("oncall")) return "oncall"
-    // Check user messages for product interest
     if (messages[i].role === "user") {
       if (/\bcode\b/i.test(text) && !text.includes("code quality") && !text.includes("code standard")) return "code"
       if (/\bdata\b/i.test(text)) return "data"
@@ -71,7 +69,6 @@ export function ChatContainer() {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Check if AI API is available on mount
   useEffect(() => {
     fetch("/api/chat")
       .then((r) => r.json())
@@ -79,7 +76,6 @@ export function ChatContainer() {
       .catch(() => setAiAvailable(false))
   }, [])
 
-  // AI mode hooks (only used when AI is available)
   const aiChat = useChat({
     messages: [welcomeMessage],
     onError: () => {
@@ -88,7 +84,6 @@ export function ChatContainer() {
     },
   })
 
-  // Sync AI messages to our state when in AI mode
   useEffect(() => {
     if (aiAvailable === true) {
       setMessages(aiChat.messages)
@@ -164,7 +159,6 @@ export function ChatContainer() {
     }
   }
 
-  // Auto-scroll to bottom
   useEffect(() => {
     const el = scrollRef.current
     if (el) {
@@ -183,24 +177,11 @@ export function ChatContainer() {
 
   return (
     <div className="flex h-dvh">
-      {/* Chat panel */}
-      <div className="flex w-full flex-col lg:w-1/2 lg:border-r lg:border-border">
-        {/* Header */}
-        <header className="border-border bg-background/80 flex shrink-0 items-center gap-3 border-b px-6 py-4 backdrop-blur-sm">
-          <div className="bg-primary text-primary-foreground flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold">
-            I
-          </div>
-          <div>
-            <h1 className="text-foreground text-sm font-semibold">Indent</h1>
-            <p className="text-muted-foreground text-xs">
-              {isLoading ? "Typing..." : "Your AI setup assistant"}
-            </p>
-          </div>
-        </header>
-
+      {/* Chat panel — v2 style: clean, no borders */}
+      <div className="relative flex h-full w-full shrink-0 flex-col lg:w-[45%]">
         {/* Messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-6">
+          <div className="flex flex-col gap-5 px-10 py-8">
             {messages.map((message, i) => (
               <MessageBubble
                 key={message.id}
@@ -229,8 +210,11 @@ export function ChatContainer() {
         />
       </div>
 
-      {/* Preview panel — hidden on mobile */}
-      <div className="hidden lg:flex lg:w-1/2 lg:flex-col bg-muted/30">
+      {/* Preview panel — v2 style: rounded-2xl, subtle bg, no border */}
+      <div
+        className="relative hidden max-h-[640px] self-center overflow-hidden rounded-2xl bg-foreground/[0.02] lg:block"
+        style={{ width: "55%", margin: "12px" }}
+      >
         <ProductPreview activeProduct={activeProduct} />
       </div>
     </div>
